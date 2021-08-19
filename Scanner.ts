@@ -74,7 +74,7 @@ export class Scanner {
                     this.identifier()
                 }
                 else
-                    Lox.error(this.line, "Unexpected character."); break
+                    Lox.error(new Token(TokenType.Identifier, c, null, this.line), "Unexpected character."); break
         }
     }
 
@@ -93,7 +93,7 @@ export class Scanner {
 
     private identifier() {
         while (this.isAlphaNumeric(this.peek())) this.advance()
-        let text = this.source.slice(this.start, this.current)
+        const text = this.source.slice(this.start, this.current)
         if (text in this.keywords) {
             this.addToken(this.keywords[text], null)
         } else
@@ -121,7 +121,7 @@ export class Scanner {
         }
 
         if (this.isAtEnd()) {
-            Lox.error(this.line, "Unterminated string.")
+            Lox.error(new Token(TokenType.String, this.source.slice(this.start, this.current), "", this.line), "Unterminated string.")
             return
         }
 

@@ -1,4 +1,6 @@
 import { Scanner } from "./Scanner.ts";
+import { Token } from "./Token.ts";
+import { TokenType } from "./TokenType.ts";
 
 
 export class Lox {
@@ -35,19 +37,23 @@ export class Lox {
     }
 
     private static run(source: string): void {
-        let scanner = new Scanner(source)
-        let tokens = scanner.scanTokens();
-        for (let token of tokens) {
+        const scanner = new Scanner(source)
+        const tokens = scanner.scanTokens();
+        for (const token of tokens) {
             console.log(token)
         }
     }
 
-    static error(line: number, message: string): void {
-        this.report(line, "", message)
+    static error(token: Token, message: string): void {
+        if (token.type == TokenType.Eof) {
+            Lox.report(token.line, " at end", message)
+        } else {
+            this.report(token.line, " at '" + token.lexeme + "'", message)
+        }
     }
 
     private static report(line: number, where: string, message: string): void {
-        console.error(`[line] ${line}] Error: ${where}: ${message}`)
+        console.error(`[line ${line}] Error: ${where}: ${message}`)
         this.hadError = true
     }
 }

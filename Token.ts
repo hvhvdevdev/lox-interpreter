@@ -2,8 +2,8 @@ import { TokenType } from "./TokenType.ts";
 
 export class Token {
     public constructor(
-        private type: TokenType, private lexeme: string,
-        private literal: unknown, private line: number
+        public type: TokenType, public lexeme: string,
+        public literal: unknown, public line: number
     ) { }
 
     public toString(): string {
