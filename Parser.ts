@@ -10,6 +10,15 @@ export class Parser {
 
     }
 
+    public parse() {
+        try {
+            return this.expression()
+        }
+        catch {
+            return null
+        }
+    }
+
     private expression() {
         return this.equality();
     }
@@ -55,6 +64,17 @@ export class Parser {
         return expr
     }
 
+    private synchronize() {
+        this.advance()
+        while (!this.isAtEnd()) {
+            if (this.previous().type == TokenType.SemiColon) return;
+
+            if ([TokenType.Class, TokenType.Fun, TokenType.Var, TokenType.For, TokenType.If, TokenType.While, TokenType.Print, TokenType.Return]
+                .includes(this.peek().type))
+                return
+            this.advance()
+        }
+    }
 
     private unary(): Expr {
         if (this.match([TokenType.Bang, TokenType.Minus])) {

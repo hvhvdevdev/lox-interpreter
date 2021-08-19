@@ -1,3 +1,5 @@
+import { Interpreter } from "./Interpreter.ts";
+import { Parser } from "./Parser.ts";
 import { Scanner } from "./Scanner.ts";
 import { Token } from "./Token.ts";
 import { TokenType } from "./TokenType.ts";
@@ -5,6 +7,8 @@ import { TokenType } from "./TokenType.ts";
 
 export class Lox {
     private static hadError = false
+    private static hadRunError = false
+    private static interpreter = new Interpreter()
 
     public static main(args: string[]): void {
         if (args.length > 1) {
@@ -23,6 +27,9 @@ export class Lox {
         if (this.hadError) {
             throw new Error("65")
         }
+        if (this.hadRunError) {
+            throw new Error("70")
+        }
     }
 
     private static runPrompt(): void {
@@ -39,9 +46,10 @@ export class Lox {
     private static run(source: string): void {
         const scanner = new Scanner(source)
         const tokens = scanner.scanTokens();
-        for (const token of tokens) {
-            console.log(token)
-        }
+        const ast = new Parser(tokens).parse()
+        console.log(ast)
+        if (ast !== null)
+            this.interpreter.interpret(ast)
     }
 
     static error(token: Token, message: string): void {
@@ -50,6 +58,11 @@ export class Lox {
         } else {
             this.report(token.line, " at '" + token.lexeme + "'", message)
         }
+    }
+
+    static runError(e: Error) {
+        console.error(`Runtime error: ${e}`)
+        Lox.hadRunError = true
     }
 
     private static report(line: number, where: string, message: string): void {
